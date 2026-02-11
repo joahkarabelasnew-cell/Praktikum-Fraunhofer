@@ -19,10 +19,12 @@
     --success: #00c853;
     --warning: #ffb300;
     --danger: #ff3b30;
+    --scale: 1;
 }
 
 html {
     scroll-behavior: smooth;
+    font-size: calc(16px * var(--scale));
 }
 
 body {
@@ -66,6 +68,7 @@ body {
     text-align: center;
     padding: 40px 0;
     margin-bottom: 30px;
+    position: relative;
 }
 
 .header-content {
@@ -87,7 +90,7 @@ body {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 10px;
-    background: linear-gradient(135deg, #00bfff 0%, #0066cc 100%);
+    background: linear-gradient(135deg, var(--accent-blue) 0%, var(--primary-blue) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -97,6 +100,256 @@ body {
     font-size: 1.1rem;
     color: var(--text-secondary);
     font-weight: 300;
+}
+
+/* Settings Toggle Button */
+.settings-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.settings-toggle:hover {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 18px rgba(0, 102, 204, 0.4);
+}
+
+.settings-toggle:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+/* Settings Panel */
+.settings-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.settings-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+.settings-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 102, 204, 0.3);
+    z-index: 300;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.settings-panel.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    background: linear-gradient(135deg, rgba(0, 102, 204, 0.1) 0%, transparent 100%);
+}
+
+.settings-header h2 {
+    font-size: 1.3rem;
+    color: var(--accent-blue);
+}
+
+.settings-close {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.settings-close:hover {
+    color: var(--accent-blue);
+    transform: rotate(90deg);
+}
+
+.settings-content {
+    padding: 25px;
+}
+
+.settings-section {
+    margin-bottom: 25px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.settings-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.settings-section h3 {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.settings-section h4 {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Color Picker */
+.color-picker-main {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(0, 102, 204, 0.05);
+    border-radius: 10px;
+}
+
+.color-picker-main label {
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.color-input-main {
+    width: 80px;
+    height: 40px;
+    border: 2px solid var(--primary-light);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.color-input-main:hover {
+    border-color: var(--accent-blue);
+    transform: scale(1.05);
+}
+
+/* Color Palette */
+.color-palette {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
+    gap: 10px;
+}
+
+.color-option {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.color-option:hover {
+    transform: scale(1.15);
+    border-color: var(--text-primary);
+}
+
+.color-option.active {
+    border-color: var(--text-primary);
+    box-shadow: 0 0 15px currentColor;
+    transform: scale(1.2);
+}
+
+/* Scale Settings */
+.scale-setting {
+    padding: 15px;
+    background: rgba(0, 102, 204, 0.05);
+    border-radius: 10px;
+}
+
+.scale-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.scale-header label {
+    font-weight: 500;
+}
+
+.scale-display {
+    background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.scale-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+/* Responsive Settings */
+@media (max-width: 600px) {
+    .settings-toggle {
+        right: 20px;
+    }
+
+    .settings-panel {
+        width: 95%;
+        max-height: 90vh;
+    }
+
+    .color-palette {
+        grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    }
 }
 
 /* Main Content */
@@ -521,6 +774,17 @@ body {
     to {
         opacity: 1;
         transform: translateX(0);
+    }
+}
+
+@keyframes slideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(400px);
     }
 }
 

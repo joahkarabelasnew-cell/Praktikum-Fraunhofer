@@ -16,7 +16,58 @@
                 <h1 class="title">🔐 Passwortgenerator</h1>
                 <p class="subtitle">Erstelle sichere und starke Passwörter in Sekunden</p>
             </div>
+            <button class="settings-toggle" id="settingsToggle" title="Einstellungen">
+                ⚙️
+            </button>
         </header>
+
+        <!-- Settings Panel -->
+        <div class="settings-panel" id="settingsPanel">
+            <div class="settings-header">
+                <h2>⚙️ Einstellungen</h2>
+                <button class="settings-close" id="settingsClose">✕</button>
+            </div>
+
+            <div class="settings-content">
+                <!-- Color Settings -->
+                <div class="settings-section">
+                    <h3>🎨 Farbe</h3>
+                    <div class="color-picker-main">
+                        <label for="colorPicker">Primärfarbe:</label>
+                        <input type="color" id="colorPicker" class="color-input-main" value="#0066cc">
+                    </div>
+
+                    <h4>Vordefinierte Farben</h4>
+                    <div class="color-palette" id="colorPalette"></div>
+                </div>
+
+                <!-- Layout Settings -->
+                <div class="settings-section">
+                    <h3>📐 Größe</h3>
+                    <div class="scale-setting">
+                        <div class="scale-header">
+                            <label for="scalePicker">Layout-Skalierung</label>
+                            <span class="scale-display" id="scaleDisplay">100%</span>
+                        </div>
+                        <input type="range" id="scalePicker" min="100" max="120" value="100" step="5" class="slider">
+                        <div class="scale-info">
+                            <small>100%</small>
+                            <small>120%</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reset Settings -->
+                <div class="settings-section">
+                    <button id="resetSettings" class="btn btn-secondary">
+                        🔄 Auf Standard zurücksetzen
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Overlay -->
+        <div class="settings-overlay" id="settingsOverlay"></div>
 
         <!-- Main Content -->
         <main class="main-content">

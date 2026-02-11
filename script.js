@@ -16,6 +16,54 @@ const statLength = document.getElementById('statLength');
 const statCombinations = document.getElementById('statCombinations');
 const statUnique = document.getElementById('statUnique');
 
+// Settings Elements
+const settingsToggle = document.getElementById('settingsToggle');
+const settingsPanel = document.getElementById('settingsPanel');
+const settingsOverlay = document.getElementById('settingsOverlay');
+const settingsClose = document.getElementById('settingsClose');
+const colorPicker = document.getElementById('colorPicker');
+const colorPalette = document.getElementById('colorPalette');
+const scalePicker = document.getElementById('scalePicker');
+const scaleDisplay = document.getElementById('scaleDisplay');
+const resetSettings = document.getElementById('resetSettings');
+
+// Color Palette - 100 verschiedene Farben
+const COLORS = [
+    // Blaue Töne (20)
+    '#0066cc', '#0052a3', '#003d7a', '#002851', '#0a3a8e',
+    '#1e4fb0', '#2563d4', '#3b7def', '#5b9ef5', '#7ab8ff',
+    '#0099ff', '#00ccff', '#00bfff', '#1aadff', '#4dbaff',
+    '#0048b8', '#005ecf', '#0076e6', '#1a8cff', '#4da6ff',
+    
+    // Lila/Violett Töne (15)
+    '#6b21a8', '#7e22ce', '#8b5cf6', '#a78bfa', '#c4b5fd',
+    '#5b21b6', '#6d28d9', '#7c3aed', '#a855f7', '#d8b4fe',
+    '#9333ea', '#b024d5', '#c026d3', '#d946ef', '#f0abfc',
+    
+    // Rot/Pink Töne (15)
+    '#dc2626', '#ef4444', '#f87171', '#fca5a5', '#fecaca',
+    '#991b1b', '#b91c1c', '#ea580c', '#ff4444', '#ff6666',
+    '#ec4899', '#f43f5e', '#fb7185', '#ff80ab', '#ffb3c1',
+    
+    // Grün Töne (15)
+    '#16a34a', '#22c55e', '#4ade80', '#86efac', '#bbf7d0',
+    '#065f46', '#047857', '#059669', '#10b981', '#6ee7b7',
+    '#00c853', '#1aed7a', '#00ff88', '#66ff99', '#99ffaa',
+    
+    // Orange/Gelb Töne (15)
+    '#ea580c', '#ff8800', '#ffaa00', '#ff9900', '#ff7700',
+    '#fbbf24', '#fcd34d', '#fef08a', '#fef3c7', '#fde047',
+    '#eab308', '#ca8a04', '#b45309', '#92400e', '#78350f',
+    
+    // Türkis/Cyan (10)
+    '#06b6d4', '#14b8a6', '#0891b2', '#0d9488', '#14b8a6',
+    '#2dd4bf', '#67e8f9', '#164e63', '#134e4a', '#0f766e',
+    
+    // Grau/Neutral (10)
+    '#6b7280', '#9ca3af', '#d1d5db', '#e5e7eb', '#f3f4f6',
+    '#4b5563', '#6b7587', '#8b949e', '#c9d1d9', '#30363d'
+];
+
 // Character Sets
 const CHARACTER_SETS = {
     uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
@@ -24,12 +72,165 @@ const CHARACTER_SETS = {
     special: '!@#$%^&*()_+-=[]{}|;:,.<>?'
 };
 
-// Event Listeners
-lengthSlider.addEventListener('input', updateLengthDisplay);
-generateBtn.addEventListener('click', generatePassword);
-refreshBtn.addEventListener('click', generatePassword);
-copyBtn.addEventListener('click', copyToClipboard);
-clearBtn.addEventListener('click', clearPassword);
+// Settings Funktionen
+function initializeSettings() {
+    loadSettings();
+    initializeColorPalette();
+    setupEventListeners();
+}
+
+function setupEventListeners() {
+    // Password generation
+    lengthSlider.addEventListener('input', updateLengthDisplay);
+    generateBtn.addEventListener('click', generatePassword);
+    refreshBtn.addEventListener('click', generatePassword);
+    copyBtn.addEventListener('click', copyToClipboard);
+    clearBtn.addEventListener('click', clearPassword);
+    
+    // Settings
+    settingsToggle.addEventListener('click', toggleSettings);
+    settingsClose.addEventListener('click', closeSettings);
+    settingsOverlay.addEventListener('click', closeSettings);
+    colorPicker.addEventListener('change', handleColorChange);
+    scalePicker.addEventListener('input', handleScaleChange);
+    resetSettings.addEventListener('click', resetToDefaults);
+    
+    // Close settings on Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeSettings();
+        }
+    });
+}
+
+function toggleSettings() {
+    if (settingsPanel.classList.contains('active')) {
+        closeSettings();
+    } else {
+        openSettings();
+    }
+}
+
+function openSettings() {
+    settingsPanel.classList.add('active');
+    settingsOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSettings() {
+    settingsPanel.classList.remove('active');
+    settingsOverlay.classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+function initializeColorPalette() {
+    COLORS.forEach((color) => {
+        const colorOption = document.createElement('div');
+        colorOption.className = 'color-option';
+        colorOption.style.backgroundColor = color;
+        colorOption.title = color;
+        colorOption.addEventListener('click', () => {
+            setColor(color);
+        });
+        colorPalette.appendChild(colorOption);
+    });
+}
+
+function handleColorChange(e) {
+    const color = e.target.value;
+    setColor(color);
+}
+
+function setColor(color) {
+    colorPicker.value = color;
+    updateColorOptions(color);
+    applyColor(color);
+    localStorage.setItem('primaryColor', color);
+}
+
+function updateColorOptions(color) {
+    document.querySelectorAll('.color-option').forEach(option => {
+        if (option.style.backgroundColor === color) {
+            option.classList.add('active');
+        } else {
+            option.classList.remove('active');
+        }
+    });
+}
+
+function applyColor(hexColor) {
+    // Konvertiere HEX zu RGB für weitere Verarbeitung
+    const rgb = hexToRgb(hexColor);
+    
+    // Erstelle Variationen der Farbe
+    const darkColor = shadeColor(hexColor, -20);
+    const lightColor = shadeColor(hexColor, 20);
+    const veryLight = shadeColor(hexColor, 50);
+    
+    // Setze CSS Variablen
+    document.documentElement.style.setProperty('--primary-blue', hexColor);
+    document.documentElement.style.setProperty('--primary-dark', darkColor);
+    document.documentElement.style.setProperty('--primary-light', lightColor);
+    document.documentElement.style.setProperty('--accent-blue', lightColor);
+}
+
+function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
+function shadeColor(color, percent) {
+    const num = parseInt(color.replace("#",""), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = Math.max(0, Math.min(255, (num >> 16) + amt));
+    const G = Math.max(0, Math.min(255, (num >> 8 & 0x00FF) + amt));
+    const B = Math.max(0, Math.min(255, (num & 0x0000FF) + amt));
+    return "#" + (0x1000000 + (R < 16 ? 0 : 1) * R * 0x10000 +
+        (G < 16 ? 0 : 1) * G * 0x100 + (B < 16 ? 0 : 1) * B)
+        .toString(16).slice(1);
+}
+
+function handleScaleChange(e) {
+    const scale = parseInt(e.target.value);
+    scaleDisplay.textContent = scale + '%';
+    applyScale(scale);
+    localStorage.setItem('layoutScale', scale.toString());
+}
+
+function applyScale(scale) {
+    const scaleValue = scale / 100;
+    document.documentElement.style.setProperty('--scale', scaleValue);
+    document.documentElement.style.fontSize = (16 * scaleValue) + 'px';
+}
+
+function loadSettings() {
+    // Load color
+    const savedColor = localStorage.getItem('primaryColor') || '#0066cc';
+    colorPicker.value = savedColor;
+    applyColor(savedColor);
+    updateColorOptions(savedColor);
+    
+    // Load scale
+    const savedScale = localStorage.getItem('layoutScale') || '100';
+    scalePicker.value = savedScale;
+    scaleDisplay.textContent = savedScale + '%';
+    applyScale(parseInt(savedScale));
+}
+
+function resetToDefaults() {
+    if (confirm('Möchtest du wirklich alle Einstellungen zurücksetzen?')) {
+        localStorage.removeItem('primaryColor');
+        localStorage.removeItem('layoutScale');
+        colorPicker.value = '#0066cc';
+        scalePicker.value = '100';
+        loadSettings();
+        showNotification('✓ Einstellungen zurückgesetzt!', 'success');
+    }
+}
 
 // Update length display
 function updateLengthDisplay() {
@@ -223,5 +424,6 @@ document.addEventListener('keypress', (e) => {
 
 // Generate initial password on page load
 window.addEventListener('load', () => {
+    initializeSettings();
     generatePassword();
 });
