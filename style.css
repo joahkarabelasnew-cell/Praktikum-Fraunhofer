@@ -336,11 +336,61 @@ body {
     font-size: 0.85rem;
 }
 
-/* Quick Links */
-.quick-links {
+/* Quick Links Menu */
+.btn-toggle {
+    width: 100%;
+    padding: 12px;
+}
+
+.quick-links-menu {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 12px;
+    padding: 15px;
+    background: rgba(0, 102, 204, 0.05);
+    border-radius: 10px;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.quick-link-btn {
+    padding: 10px 12px;
+    background: rgba(0, 102, 204, 0.1);
+    border: 2px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.quick-link-btn:hover {
+    background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+    border-color: var(--accent-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+}
+
+.quick-link-btn:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+    .quick-links-menu {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Password Checker */

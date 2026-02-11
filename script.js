@@ -26,8 +26,9 @@ const colorPalette = document.getElementById('colorPalette');
 const scalePicker = document.getElementById('scalePicker');
 const scaleDisplay = document.getElementById('scaleDisplay');
 const resetSettings = document.getElementById('resetSettings');
-const youtubeBtn = document.getElementById('youtubeBtn');
-const githubBtn = document.getElementById('githubBtn');
+const quickLinksToggle = document.getElementById('quickLinksToggle');
+const quickLinksMenu = document.getElementById('quickLinksMenu');
+const quickLinkBtns = document.querySelectorAll('.quick-link-btn');
 
 // Checker Elements
 const checkerInput = document.getElementById('checkerInput');
@@ -110,8 +111,25 @@ function setupEventListeners() {
     colorPicker.addEventListener('change', handleColorChange);
     scalePicker.addEventListener('input', handleScaleChange);
     resetSettings.addEventListener('click', resetToDefaults);
-    youtubeBtn.addEventListener('click', () => window.open('https://www.youtube.com', '_blank'));
-    githubBtn.addEventListener('click', () => window.open('https://www.github.com', '_blank'));
+    
+    // Quick Links Toggle
+    quickLinksToggle.addEventListener('click', () => {
+        if (quickLinksMenu.style.display === 'none') {
+            quickLinksMenu.style.display = 'grid';
+            quickLinksToggle.textContent = '📱 Social Media & Co. ▲';
+        } else {
+            quickLinksMenu.style.display = 'none';
+            quickLinksToggle.textContent = '📱 Social Media & Co. ▼';
+        }
+    });
+    
+    // Quick Link Buttons
+    quickLinkBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const url = e.target.getAttribute('data-url');
+            window.open(url, '_blank');
+        });
+    });
     
     // Checker
     checkerInput.addEventListener('input', checkPassword);
