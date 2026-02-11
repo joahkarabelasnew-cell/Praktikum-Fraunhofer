@@ -26,6 +26,8 @@ const colorPalette = document.getElementById('colorPalette');
 const scalePicker = document.getElementById('scalePicker');
 const scaleDisplay = document.getElementById('scaleDisplay');
 const resetSettings = document.getElementById('resetSettings');
+const youtubeBtn = document.getElementById('youtubeBtn');
+const githubBtn = document.getElementById('githubBtn');
 
 // Color Palette - 100 verschiedene Farben
 const COLORS = [
@@ -94,6 +96,8 @@ function setupEventListeners() {
     colorPicker.addEventListener('change', handleColorChange);
     scalePicker.addEventListener('input', handleScaleChange);
     resetSettings.addEventListener('click', resetToDefaults);
+    youtubeBtn.addEventListener('click', () => window.open('https://www.youtube.com', '_blank'));
+    githubBtn.addEventListener('click', () => window.open('https://www.github.com', '_blank'));
     
     // Close settings on Escape
     document.addEventListener('keydown', (e) => {
@@ -172,6 +176,11 @@ function applyColor(hexColor) {
     document.documentElement.style.setProperty('--primary-dark', darkColor);
     document.documentElement.style.setProperty('--primary-light', lightColor);
     document.documentElement.style.setProperty('--accent-blue', lightColor);
+    
+    // Ändere den Hintergrund-Gradient
+    const gradientBg = document.querySelector('.gradient-bg');
+    const veryDark = shadeColor(hexColor, -60);
+    gradientBg.style.background = `linear-gradient(135deg, ${veryDark} 0%, ${darkColor} 50%, ${veryDark} 100%)`;
 }
 
 function hexToRgb(hex) {

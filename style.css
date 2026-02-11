@@ -336,6 +336,13 @@ body {
     font-size: 0.85rem;
 }
 
+/* Quick Links */
+.quick-links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
 /* Responsive Settings */
 @media (max-width: 600px) {
     .settings-toggle {
