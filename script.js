@@ -29,6 +29,20 @@ const resetSettings = document.getElementById('resetSettings');
 const youtubeBtn = document.getElementById('youtubeBtn');
 const githubBtn = document.getElementById('githubBtn');
 
+// Checker Elements
+const checkerInput = document.getElementById('checkerInput');
+const togglePasswordVisibility = document.getElementById('togglePasswordVisibility');
+const checkerResults = document.getElementById('checkerResults');
+const checkerStrengthFill = document.getElementById('checkerStrengthFill');
+const checkerStrengthText = document.getElementById('checkerStrengthText');
+const checkerLength = document.getElementById('checkerLength');
+const checkerUppercase = document.getElementById('checkerUppercase');
+const checkerLowercase = document.getElementById('checkerLowercase');
+const checkerDigits = document.getElementById('checkerDigits');
+const checkerSpecial = document.getElementById('checkerSpecial');
+const checkerUnique = document.getElementById('checkerUnique');
+const checkerFeedback = document.getElementById('checkerFeedback');
+
 // Color Palette - 100 verschiedene Farben
 const COLORS = [
     // Blaue Töne (20)
@@ -98,6 +112,10 @@ function setupEventListeners() {
     resetSettings.addEventListener('click', resetToDefaults);
     youtubeBtn.addEventListener('click', () => window.open('https://www.youtube.com', '_blank'));
     githubBtn.addEventListener('click', () => window.open('https://www.github.com', '_blank'));
+    
+    // Checker
+    checkerInput.addEventListener('input', checkPassword);
+    togglePasswordVisibility.addEventListener('click', togglePasswordView);
     
     // Close settings on Escape
     document.addEventListener('keydown', (e) => {
@@ -404,6 +422,209 @@ function clearPassword() {
     statLength.textContent = '0';
     statCombinations.textContent = '0';
     statUnique.textContent = '0';
+}
+
+// ============ PASSWORD CHECKER FUNCTIONS ============
+
+function togglePasswordView() {
+    const isPassword = checkerInput.type === 'password';
+    checkerInput.type = isPassword ? 'text' : 'password';
+    togglePasswordVisibility.textContent = isPassword ? '🙈' : '👁️';
+}
+
+function checkPassword() {
+    const password = checkerInput.value;
+    
+    if (!password) {
+        checkerResults.style.display = 'none';
+        return;
+    }
+    
+    checkerResults.style.display = 'block';
+    
+    // Check character types
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasDigits = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password);
+    
+    // Update character type indicators
+    checkerUppercase.textContent = hasUppercase ? '✓' : '✗';
+    checkerUppercase.style.color = hasUppercase ? '#00c853' : '#ff3b30';
+    
+    checkerLowercase.textContent = hasLowercase ? '✓' : '✗';
+    checkerLowercase.style.color = hasLowercase ? '#00c853' : '#ff3b30';
+    
+    checkerDigits.textContent = hasDigits ? '✓' : '✗';
+    checkerDigits.style.color = hasDigits ? '#00c853' : '#ff3b30';
+    
+    checkerSpecial.textContent = hasSpecial ? '✓' : '✗';
+    checkerSpecial.style.color = hasSpecial ? '#00c853' : '#ff3b30';
+    
+    // Update length and unique chars
+    checkerLength.textContent = password.length;
+    const uniqueChars = new Set(password).size;
+    checkerUnique.textContent = uniqueChars;
+    
+    // Calculate strength
+    calculateCheckerStrength(password, hasUppercase, hasLowercase, hasDigits, hasSpecial, uniqueChars);
+}
+
+function calculateCheckerStrength(password, hasUppercase, hasLowercase, hasDigits, hasSpecial, uniqueChars) {
+    const length = password.length;
+    let score = 0;
+    const feedback = [];
+    
+    // Length scoring
+    if (length >= 16) {
+        score += 30;
+        feedback.push({ text: 'Excellent length (16+ characters)', type: 'positive' });
+    } else if (length >= 12) {
+        score += 20;
+        feedback.push({ text: 'Good length (12-15 characters)', type: 'positive' });
+    } else if (length >= 8) {
+        score += 10;
+        feedback.push({ text: 'Adequate length, but consider longer', type: 'neutral' });
+    } else {
+        feedback.push({ text: 'Too short, should be at least 8 characters', type: 'negative' });
+    }
+    
+    // Character variety scoring
+    let varietyCount = 0;
+    if (hasUppercase) {
+        varietyCount++;
+        score += 10;
+        feedback.push({ text: 'Contains uppercase letters', type: 'positive' });
+    }
+    if (hasLowercase) {
+        varietyCount++;
+        score += 10;
+        feedback.push({ text: 'Contains lowercase letters', type: 'positive' });
+    }
+    if (hasDigits) {
+        varietyCount++;
+        score += 10;
+        feedback.push({ text: 'Contains numbers', type: 'positive' });
+    }
+    if (hasSpecial) {
+        varietyCount++;
+        score += 20;
+        feedback.push({ text: 'Contains special characters (strong)', type: 'positive' });
+    }
+    
+    if (varietyCount < 2) {
+        feedback.push({ text: 'Low variety - mix different character types', type: 'negative' });
+    }
+    
+    // Unique character diversity
+    if (uniqueChars / length < 0.7) {
+        feedback.push({ text: 'Too many repeated characters', type: 'negative' });
+    } else {
+        score += 10;
+        feedback.push({ text: 'Good character diversity', type: 'positive' });
+    }
+    
+    // Common patterns check
+    if (hasCommonPattern(password)) {
+        score = Math.max(0, score - 15);
+        feedback.push({ text: 'Contains common pattern or dictionary word', type: 'negative' });
+    }
+    
+    // Sequential check
+    if (hasSequentialChars(password)) {
+        score = Math.max(0, score - 10);
+        feedback.push({ text: 'Contains sequential characters (abc, 123)', type: 'negative' });
+    }
+    
+    // Cap score at 100
+    score = Math.min(100, score);
+    
+    // Update visual display
+    checkerStrengthFill.style.width = score + '%';
+    
+    let strengthLabel = '';
+    let strengthColor = '';
+    
+    if (score < 20) {
+        strengthLabel = '🔴 Sehr Schwach';
+        strengthColor = '#ff3b30';
+    } else if (score < 40) {
+        strengthLabel = '🟠 Schwach';
+        strengthColor = '#ffb300';
+    } else if (score < 60) {
+        strengthLabel = '🟡 Mittel';
+        strengthColor = '#ffb300';
+    } else if (score < 80) {
+        strengthLabel = '🟢 Stark';
+        strengthColor = '#00c853';
+    } else {
+        strengthLabel = '🟢🟢 Sehr Stark';
+        strengthColor = '#00c853';
+    }
+    
+    checkerStrengthText.textContent = strengthLabel + ' (' + score + '/100)';
+    checkerStrengthText.style.color = strengthColor;
+    
+    // Display feedback
+    displayFeedback(feedback, score);
+}
+
+function hasCommonPattern(password) {
+    const commonPatterns = [
+        'password', 'qwerty', 'abc', '123456', 'admin', 'user',
+        'login', 'test', 'pass', '111111', '123123', '000000',
+        'welcome', '12345', 'letmein', 'dragon', 'master'
+    ];
+    
+    const lowerPassword = password.toLowerCase();
+    return commonPatterns.some(pattern => lowerPassword.includes(pattern));
+}
+
+function hasSequentialChars(password) {
+    for (let i = 0; i < password.length - 2; i++) {
+        const code1 = password.charCodeAt(i);
+        const code2 = password.charCodeAt(i + 1);
+        const code3 = password.charCodeAt(i + 2);
+        
+        if (code2 === code1 + 1 && code3 === code2 + 1) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function displayFeedback(feedback, score) {
+    let html = '<h4>💡 Feedback:</h4><ul class="feedback-list">';
+    
+    feedback.forEach(item => {
+        const className = item.type === 'positive' ? 'positive' : item.type === 'negative' ? 'negative' : '';
+        html += `<li class="${className}">${item.text}</li>`;
+    });
+    
+    html += '</ul>';
+    
+    // Add recommendations
+    if (score < 60) {
+        html += '<h4 style="margin-top: 15px;">🎯 Verbesserungen:</h4><ul class="feedback-list">';
+        if (password.length < 12) {
+            html += '<li>→ Verlängere das Passwort auf mindestens 12 Zeichen</li>';
+        }
+        if (!/[A-Z]/.test(password)) {
+            html += '<li>→ Füge Großbuchstaben hinzu</li>';
+        }
+        if (!/[a-z]/.test(password)) {
+            html += '<li>→ Füge Kleinbuchstaben hinzu</li>';
+        }
+        if (!/[0-9]/.test(password)) {
+            html += '<li>→ Füge Ziffern hinzu</li>';
+        }
+        if (!/[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password)) {
+            html += '<li>→ Füge Sonderzeichen hinzu</li>';
+        }
+        html += '</ul>';
+    }
+    
+    checkerFeedback.innerHTML = html;
 }
 
 // Show notification

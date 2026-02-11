@@ -343,6 +343,152 @@ body {
     gap: 12px;
 }
 
+/* Password Checker */
+.checker-input-wrapper {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.checker-input {
+    flex: 1;
+    padding: 12px 15px;
+    background: rgba(0, 102, 204, 0.1);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: monospace;
+    transition: all 0.3s ease;
+}
+
+.checker-input:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    background: rgba(0, 102, 204, 0.15);
+}
+
+.checker-input::placeholder {
+    color: var(--text-secondary);
+}
+
+.toggle-visibility {
+    background: rgba(0, 191, 255, 0.2);
+    border: 2px solid var(--accent-blue);
+    border-radius: 10px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    color: var(--accent-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-visibility:hover {
+    background: rgba(0, 191, 255, 0.3);
+    transform: scale(1.05);
+}
+
+.checker-results {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Checker Stats */
+.checker-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(0, 102, 204, 0.05);
+    border-radius: 10px;
+}
+
+.checker-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px;
+    background: rgba(0, 102, 204, 0.08);
+    transition: all 0.3s ease;
+}
+
+.checker-stat:hover {
+    background: rgba(0, 102, 204, 0.15);
+    transform: translateY(-2px);
+}
+
+.stat-icon {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent-blue);
+}
+
+/* Checker Feedback */
+.checker-feedback {
+    padding: 15px;
+    background: rgba(0, 102, 204, 0.1);
+    border-left: 4px solid var(--primary-light);
+    border-radius: 8px;
+}
+
+.checker-feedback h4 {
+    color: var(--text-primary);
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.feedback-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.feedback-list li {
+    padding: 5px 0 5px 25px;
+    position: relative;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.feedback-list li::before {
+    position: absolute;
+    left: 0;
+    content: '→';
+    color: var(--accent-blue);
+    font-weight: bold;
+}
+
+.feedback-list li.positive::before {
+    content: '✓';
+    color: var(--success);
+}
+
+.feedback-list li.negative::before {
+    content: '✗';
+    color: var(--danger);
+}
+
 /* Responsive Settings */
 @media (max-width: 600px) {
     .settings-toggle {
