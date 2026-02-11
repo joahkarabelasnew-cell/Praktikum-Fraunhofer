@@ -26,6 +26,9 @@ const colorPalette = document.getElementById('colorPalette');
 const scalePicker = document.getElementById('scalePicker');
 const scaleDisplay = document.getElementById('scaleDisplay');
 const resetSettings = document.getElementById('resetSettings');
+const accentColorPicker = document.getElementById('accentColorPicker');
+const gradientColorPicker = document.getElementById('gradientColorPicker');
+const textColorPicker = document.getElementById('textColorPicker');
 const quickLinksToggle = document.getElementById('quickLinksToggle');
 const quickLinksMenu = document.getElementById('quickLinksMenu');
 const quickLinkBtns = document.querySelectorAll('.quick-link-btn');
@@ -109,6 +112,9 @@ function setupEventListeners() {
     settingsClose.addEventListener('click', closeSettings);
     settingsOverlay.addEventListener('click', closeSettings);
     colorPicker.addEventListener('change', handleColorChange);
+    accentColorPicker.addEventListener('change', handleAccentColorChange);
+    gradientColorPicker.addEventListener('change', handleGradientColorChange);
+    textColorPicker.addEventListener('change', handleTextColorChange);
     scalePicker.addEventListener('input', handleScaleChange);
     resetSettings.addEventListener('click', resetToDefaults);
     
@@ -239,6 +245,42 @@ function shadeColor(color, percent) {
         .toString(16).slice(1);
 }
 
+function handleAccentColorChange(e) {
+    const color = e.target.value;
+    setAccentColor(color);
+}
+
+function setAccentColor(color) {
+    accentColorPicker.value = color;
+    document.documentElement.style.setProperty('--accent-blue', color);
+    localStorage.setItem('accentColor', color);
+}
+
+function handleGradientColorChange(e) {
+    const color = e.target.value;
+    setGradientColor(color);
+}
+
+function setGradientColor(color) {
+    gradientColorPicker.value = color;
+    const primaryColor = colorPicker.value || '#0066cc';
+    const veryDark = shadeColor(primaryColor, -60);
+    const gradientBg = document.querySelector('.gradient-bg');
+    gradientBg.style.background = `linear-gradient(135deg, ${veryDark} 0%, ${color} 50%, ${veryDark} 100%)`;
+    localStorage.setItem('gradientColor', color);
+}
+
+function handleTextColorChange(e) {
+    const color = e.target.value;
+    setTextColor(color);
+}
+
+function setTextColor(color) {
+    textColorPicker.value = color;
+    document.documentElement.style.setProperty('--text-primary', color);
+    localStorage.setItem('textColor', color);
+}
+
 function handleScaleChange(e) {
     const scale = parseInt(e.target.value);
     scaleDisplay.textContent = scale + '%';
@@ -259,6 +301,21 @@ function loadSettings() {
     applyColor(savedColor);
     updateColorOptions(savedColor);
     
+    // Load accent color
+    const savedAccentColor = localStorage.getItem('accentColor') || '#00bfff';
+    accentColorPicker.value = savedAccentColor;
+    setAccentColor(savedAccentColor);
+    
+    // Load gradient color
+    const savedGradientColor = localStorage.getItem('gradientColor') || '#1a2a4a';
+    gradientColorPicker.value = savedGradientColor;
+    setGradientColor(savedGradientColor);
+    
+    // Load text color
+    const savedTextColor = localStorage.getItem('textColor') || '#ffffff';
+    textColorPicker.value = savedTextColor;
+    setTextColor(savedTextColor);
+    
     // Load scale
     const savedScale = localStorage.getItem('layoutScale') || '100';
     scalePicker.value = savedScale;
@@ -269,8 +326,14 @@ function loadSettings() {
 function resetToDefaults() {
     if (confirm('Möchtest du wirklich alle Einstellungen zurücksetzen?')) {
         localStorage.removeItem('primaryColor');
+        localStorage.removeItem('accentColor');
+        localStorage.removeItem('gradientColor');
+        localStorage.removeItem('textColor');
         localStorage.removeItem('layoutScale');
         colorPicker.value = '#0066cc';
+        accentColorPicker.value = '#00bfff';
+        gradientColorPicker.value = '#1a2a4a';
+        textColorPicker.value = '#ffffff';
         scalePicker.value = '100';
         loadSettings();
         showNotification('✓ Einstellungen zurückgesetzt!', 'success');
